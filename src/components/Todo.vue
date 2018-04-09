@@ -118,6 +118,10 @@ li {
   list-style: none;
 }
 
+.card {
+  min-height: 170px;
+}
+
 .status-marker {
   float: right;
 }
