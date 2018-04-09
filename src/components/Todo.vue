@@ -4,7 +4,9 @@
       <h3>
         {{ todo.title }}
         <span class="status-marker">
-          <mark class="secondary" v-show="todo.done === false">Pending</mark>
+          <mark class="secondary" v-show="todo.done === false">
+            Pending
+          </mark>
           <mark v-show="todo.done === true">Finished</mark>
         </span>
         <span>
@@ -13,8 +15,8 @@
       <p>{{ todo.project }}</p>
     </section>
     <section class="section edit-section" v-bind:class="editSectionClasses">
-      <input type="text" v-model="todo.title" />
-      <input type="text" v-model="todo.project" />
+      <input type="text" placeholder="Title" v-model="editTodoTemp.title" />
+      <input type="text" placeholder="Project" v-model="editTodoTemp.project" />
     </section>
     <section class="cta-section">
       <button
@@ -27,14 +29,21 @@
       <button
         class="show-edit-form-btn small"
         v-bind:class="showEditFormBtnClasses"
-        v-on:click="showEditFormHandler"
+        v-on:click="showEditFormHandler(todo)"
       >
         <i class="material-icons">mode_edit</i>
       </button>
       <button
+        class="cancel-edit-form-btn default small"
+        v-bind:class="saveEditFormBtnClasses"
+        v-on:click="cancelEditFormHandler"
+      >
+        <i class="material-icons">clear</i>
+      </button>
+      <button
         class="save-edit-form-btn default small"
         v-bind:class="saveEditFormBtnClasses"
-        v-on:click="saveEditFormHandler"
+        v-on:click="saveEditFormHandler(todo)"
       >
         <i class="material-icons">save</i>
       </button>
@@ -59,6 +68,11 @@ export default {
   data() {
     return {
       isEditing: false,
+      editTodoTemp: {
+        title: '',
+        project: '',
+        done: false,
+      }
     };
   },
   computed: {
@@ -95,12 +109,17 @@ export default {
     hideEditForm() {
       this.isEditing = false;
     },
-    showEditFormHandler() {
+    showEditFormHandler(todo) {
+      Object.assign(this.editTodoTemp, todo);
       this.showEditForm();
     },
-    saveEditFormHandler() {
+    saveEditFormHandler(todo) {
+      Object.assign(todo, this.editTodoTemp);
       sendRequest();
       this.$emit('edit-todo');
+      this.hideEditForm();
+    },
+    cancelEditFormHandler() {
       this.hideEditForm();
     },
     deleteTodo(todo) {
@@ -122,6 +141,10 @@ li {
   min-height: 170px;
 }
 
+.card .edit-section input {
+  width: 98%;
+}
+
 .status-marker {
   float: right;
 }
@@ -140,7 +163,7 @@ li {
   background: transparent;
 }
 
-.save-edit-form-btn, .mark-complete-todo-btn {
+.cancel-edit-form-btn, .mark-complete-todo-btn {
   margin-left: auto;
 }
 </style>
