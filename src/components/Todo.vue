@@ -1,30 +1,49 @@
 <template>
   <div class="Todo card">
     <section class="section content-section" v-bind:class="contentSectionClasses">
-      <h3>{{ todo.title }}</h3>
+      <h3>
+        {{ todo.title }}
+        <span class="status-marker">
+          <mark class="secondary" v-show="todo.done === false">Pending</mark>
+          <mark v-show="todo.done === true">Finished</mark>
+        </span>
+        <span>
+        </span>
+      </h3>
       <p>{{ todo.project }}</p>
     </section>
     <section class="section edit-section" v-bind:class="editSectionClasses">
-      <input type="text" />
+      <input type="text" v-model="todo.title" />
+      <input type="text" v-model="todo.project" />
     </section>
     <section class="cta-section">
-      <button class="delete-todo-btn secondary small col-md-last"
+      <button
+        class="delete-todo-btn small"
         v-bind:class="showEditFormBtnClasses"
         v-on:click="deleteTodo(todo)"
       >
-        Delete
+        <i class="material-icons">delete</i>
       </button>
-      <button class="show-edit-form-btn small col-md-last"
+      <button
+        class="show-edit-form-btn small"
         v-bind:class="showEditFormBtnClasses"
         v-on:click="showEditFormHandler"
       >
-        Edit Todo
+        <i class="material-icons">mode_edit</i>
       </button>
-      <button class="save-edit-form-btn tertiary small col-md-last"
+      <button
+        class="save-edit-form-btn default small"
         v-bind:class="saveEditFormBtnClasses"
         v-on:click="saveEditFormHandler"
       >
-        Save Changes
+        <i class="material-icons">save</i>
+      </button>
+      <button
+        class="mark-complete-todo-btn default small"
+        v-bind:class="markCompleteTodoBtnClasses"
+        v-on:click="markCompleteTodoHandler(todo)"
+      >
+        <i class="material-icons">done</i>
       </button>
     </section>
   </div>
@@ -58,6 +77,11 @@ export default {
         hidden: this.isEditing,
       };
     },
+    markCompleteTodoBtnClasses() {
+      return {
+        hidden: this.isEditing,
+      };
+    },
     saveEditFormBtnClasses() {
       return {
         hidden: !this.isEditing,
@@ -76,12 +100,15 @@ export default {
     },
     saveEditFormHandler() {
       sendRequest();
+      this.$emit('edit-todo');
       this.hideEditForm();
     },
     deleteTodo(todo) {
-      console.log(`Deleting ${todo.title}`);
       this.$emit('delete-todo', todo);
     },
+    markCompleteTodoHandler(todo) {
+      todo.done = true;
+    }
   },
 };
 </script>
@@ -91,12 +118,25 @@ li {
   list-style: none;
 }
 
-.cta-section {
-  display: flex;
-  justify-content: flex-end;
+.status-marker {
+  float: right;
 }
 
-.delete-todo-btn {
-  margin-right: auto;
+.status-marker mark{
+  padding: 2px 10px;
+  font-size: 0.75rem;
+}
+
+.cta-section {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.cta-section button {
+  background: transparent;
+}
+
+.save-edit-form-btn, .mark-complete-todo-btn {
+  margin-left: auto;
 }
 </style>
