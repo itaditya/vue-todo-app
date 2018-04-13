@@ -26,7 +26,7 @@ import Todo from './Todo';
 
 const todoSorter = (a, b) => {
   if (!a.done) {
-    if(!b.done && b.id > a.id) {
+    if (!b.done && b.id > a.id) {
       return 1;
     }
     return -1;
@@ -36,10 +36,14 @@ const todoSorter = (a, b) => {
 
 export default {
   name: 'TodoList',
-  props: ['todos'],
   components: {
     AddTodo,
     Todo,
+  },
+  data() {
+    return {
+      todos: [],
+    }
   },
   computed: {
     sortedTodos() {
@@ -62,6 +66,23 @@ export default {
     editTodo(todo) {
       const todoIndex = this.findTodoIndex(todo);
       console.log(`Editing Todo of index: ${todoIndex}`);
+    },
+  },
+  mounted() {
+    console.log('mounted');
+    const ls_todos_json = localStorage.getItem('todos');
+    if(ls_todos_json) {
+      const ls_todos = JSON.parse(ls_todos_json);
+      this.todos = ls_todos;
+    }
+  },
+  watch: {
+    todos: {
+      handler() {
+        console.log('Todos changed!');
+        localStorage.setItem('todos', JSON.stringify(this.todos));
+      },
+      deep: true,
     },
   },
 };
